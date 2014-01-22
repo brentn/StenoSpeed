@@ -12,7 +12,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/cur_speed"
         android:id="@+id/current_speed"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -29,7 +28,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="@string/max_speed"
         android:id="@+id/maximum_speed"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
@@ -46,17 +44,16 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/current_speed"
-        android:id="@+id/scrollView" >
+        android:id="@+id/scrollView"
+        android:background="@drawable/rounded_corners">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/main_window"
             android:textSize="20sp"
-            android:background="@drawable/rounded_corners"
             android:padding="8dp"
-            android:gravity="left|top"
-            android:minLines="45" />
+            android:gravity="left|top" />
     </ScrollView>
 
 </RelativeLayout>

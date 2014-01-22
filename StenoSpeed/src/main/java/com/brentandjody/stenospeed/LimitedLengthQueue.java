@@ -1,12 +1,12 @@
 package com.brentandjody.stenospeed;
 
 
-import java.util.Deque;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by brentn on 20/01/14.
+ * Implements a ringbuffer style queue, that only keeps
+ * the most recent n items
  */
 public class LimitedLengthQueue<Value> extends LinkedBlockingQueue<Value> {
     private int size_limit;
@@ -20,7 +20,7 @@ public class LimitedLengthQueue<Value> extends LinkedBlockingQueue<Value> {
     public boolean add(Value value) {
         last_item=value;
         super.add(value);
-        if (size()>size_limit)
+        while (size()>size_limit)
             remove();
         return true;
     }

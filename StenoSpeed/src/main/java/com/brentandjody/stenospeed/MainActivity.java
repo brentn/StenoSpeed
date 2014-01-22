@@ -1,29 +1,30 @@
 package com.brentandjody.stenospeed;
 
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Date;
+
 public class MainActivity extends ActionBarActivity {
 
-    private static final int THRESHOLD = 8;
+    private static final int THRESHOLD = 8; // require how many presses before we start calculating speed?
+    private static final int THRESHOLD_FOR_MAX = 100; // require how many presses before we calculate max speed?
+    private static final int BUFFER_SIZE = 300; // size of the limitedLengthQueue;
+    //assert(BUFFER_SIZE > THRESHOLD_FOR_MAX > THRESHOLD);
+
     private int total_letters=0;
-    private LimitedLengthQueue history = new LimitedLengthQueue<HistoryItem>(100);
-    double max_speed=0.0;
-    TextView current_speed_view;
-    TextView max_speed_view;
+    private LimitedLengthQueue history = new LimitedLengthQueue<HistoryItem>(BUFFER_SIZE);
+    private double max_speed=0.0;
+    private TextView current_speed_view;
+    private TextView max_speed_view;
+    private boolean initialized =false;
+    private long begin_timestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,24 +66,42 @@ public class MainActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
     private void updateSpeed() {
-        if (history.size()<THRESHOLD) return;
+        if (history.size()<THRESHOLD)  {
+            current_speed_view.setText("");
+            max_speed_view.setText("");
+            return;
+        }
         HistoryItem first = (HistoryItem) history.getFirst();
         HistoryItem last = (HistoryItem) history.getLast();
         double words = (last.getLetters()-first.getLetters())/5.0;
         double minutes = (last.getTimestamp()-first.getTimestamp())/60000.0;
         double speed = Math.round(words/minutes);
+        if (speed<0) speed=0;
         current_speed_view.setText(getResources().getString(R.string.cur_speed)+speed);
-        if (speed>max_speed) {
+        if (!initialized) {
+            if (history.size() >= THRESHOLD_FOR_MAX) {
+                begin_timestamp = first.getTimestamp();
+                initialized =true;
+            }
+        }
+        if (initialized && speed>max_speed) {
             max_speed=speed;
             max_speed_view.setText(getResources().getString(R.string.max_speed)+max_speed);
         }
+    }
+
+    private void recordStats() {
+        // RECORD: Start time, duration, number of words, max speed
+        HistoryItem last = (HistoryItem) history.getLast();
+        double words = last.getLetters() / 5;
+        double minutes = (last.getTimestamp()-begin_timestamp)/60000.0;
+        Date start_time = new Date();
+        start_time.setTime(begin_timestamp);  //record the time we began
+        //     max_speed // already defined
     }
 
 }
