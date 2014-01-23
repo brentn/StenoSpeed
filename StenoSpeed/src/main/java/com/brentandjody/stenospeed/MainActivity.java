@@ -1,5 +1,8 @@
 package com.brentandjody.stenospeed;
 
+import android.app.AlertDialog;
+import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -94,14 +97,46 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Confirm Exit")
+                .setMessage("Do you want to save these statistics?")
+                .setPositiveButton("Save & Exit", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recordStats();
+                        finish();
+                    }
+                })
+                .setNeutralButton("Just Exit", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                })
+                .setNegativeButton("Don't Exit", null)
+                .show();
+    }
+
     private void recordStats() {
+        Database db = new Database(this);
         // RECORD: Start time, duration, number of words, max speed
         HistoryItem last = (HistoryItem) history.getLast();
         double words = last.getLetters() / 5;
         double minutes = (last.getTimestamp()-begin_timestamp)/60000.0;
         Date start_time = new Date();
         start_time.setTime(begin_timestamp);  //record the time we began
-        //     max_speed // already defined
+        ContentValues cv = new ContentValues();
+        cv.put(Database.COL_DATE, start_time.getTime());
+        cv.put(Database.COL_DUR, minutes);
+        cv.put(Database.COL_WORDS, words);
+        cv.put(Database.COL_SPEED, max_speed);
+        db.getWritableDatabase().insert(Database.TABLE_RECORDS, null, cv);
+        db.close();
     }
 
 }
