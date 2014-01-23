@@ -3,6 +3,8 @@ package com.brentandjody.stenospeed;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -65,11 +67,10 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        Intent intent = new Intent(this, ProgressActivity.class);
+        startActivity(intent);
+        return id == R.id.action_progress || super.onOptionsItemSelected(item);
     }
 
     private void updateSpeed() {
@@ -99,10 +100,13 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
+        if (history.isEmpty())
+            finish();
+        else {
+            new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .setTitle("Confirm Exit")
-                .setMessage("Do you want to save these statistics?")
+                .setMessage("Save session stats?")
                 .setPositiveButton("Save & Exit", new DialogInterface.OnClickListener() {
 
                     @Override
@@ -111,7 +115,7 @@ public class MainActivity extends ActionBarActivity {
                         finish();
                     }
                 })
-                .setNeutralButton("Just Exit", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Exit", new DialogInterface.OnClickListener() {
 
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -120,11 +124,12 @@ public class MainActivity extends ActionBarActivity {
                 })
                 .setNegativeButton("Don't Exit", null)
                 .show();
+        }
     }
 
     private void recordStats() {
         Database db = new Database(this);
-        // RECORD: Start time, duration, number of words, max speed
+        if (history.isEmpty()) return;
         HistoryItem last = (HistoryItem) history.getLast();
         double words = last.getLetters() / 5;
         double minutes = (last.getTimestamp()-begin_timestamp)/60000.0;
@@ -135,7 +140,9 @@ public class MainActivity extends ActionBarActivity {
         cv.put(Database.COL_DUR, minutes);
         cv.put(Database.COL_WORDS, words);
         cv.put(Database.COL_SPEED, max_speed);
-        db.getWritableDatabase().insert(Database.TABLE_RECORDS, null, cv);
+        SQLiteDatabase sdb = db.getWritableDatabase();
+        sdb.insert(Database.TABLE_RECORDS, null, cv);
+        sdb.close();
         db.close();
     }
 

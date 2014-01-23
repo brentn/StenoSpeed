@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.brentandjody.stenospeed.MainActivity" >
     
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
+    <item android:id="@+id/action_progress"
+        android:title="@string/action_progress"
         android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>
