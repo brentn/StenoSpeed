@@ -1,6 +1,7 @@
 package com.brentandjody.stenospeed;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -38,4 +39,12 @@ public class Database extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS "+TABLE_RECORDS);
         onCreate(db);
     }
+
+    public Cursor getAllData() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor result = db.rawQuery("SELECT "+ COL_DATE + "," + COL_DUR + "," + COL_WORDS + "," + COL_SPEED
+                + " FROM " + TABLE_RECORDS + " ORDER BY " + COL_DATE + ";", null);
+        return result;
+    }
+
 }
