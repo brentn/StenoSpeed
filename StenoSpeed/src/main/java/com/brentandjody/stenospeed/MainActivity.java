@@ -68,8 +68,28 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        Intent intent = new Intent(this, ProgressActivity.class);
-        startActivity(intent);
+        if (history.isEmpty()) {
+            showProgressGraph();
+        } else {
+            new AlertDialog.Builder(this)
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setTitle("Save?")
+                .setMessage("Save session stats?")
+                .setPositiveButton("Save & Exit", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recordStats();
+                        showProgressGraph();
+                    }
+                })
+                .setNegativeButton("Don't Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        showProgressGraph();
+                    }
+                })
+                .show();
+        }
         return id == R.id.action_progress || super.onOptionsItemSelected(item);
     }
 
@@ -108,7 +128,6 @@ public class MainActivity extends ActionBarActivity {
                 .setTitle("Confirm Exit")
                 .setMessage("Save session stats?")
                 .setPositiveButton("Save & Exit", new DialogInterface.OnClickListener() {
-
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         recordStats();
@@ -125,6 +144,12 @@ public class MainActivity extends ActionBarActivity {
                 .setNegativeButton("Don't Exit", null)
                 .show();
         }
+    }
+
+    private void showProgressGraph() {
+        history = new LimitedLengthQueue<HistoryItem>(BUFFER_SIZE); //erase history
+        Intent intent = new Intent(this, ProgressActivity.class);
+        startActivity(intent);
     }
 
     private void recordStats() {
