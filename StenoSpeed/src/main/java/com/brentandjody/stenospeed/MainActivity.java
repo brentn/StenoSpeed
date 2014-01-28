@@ -131,6 +131,8 @@ public class MainActivity extends ActionBarActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         recordStats();
+                        Intent intent = new Intent(MainActivity.this, ProgressActivity.class);
+                        startActivity(intent);
                         finish();
                     }
                 })
