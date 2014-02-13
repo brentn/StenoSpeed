@@ -1,10 +1,8 @@
 package com.brentandjody.stenospeed;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -155,22 +153,13 @@ public class MainActivity extends ActionBarActivity {
     }
 
     private void recordStats() {
-        Database db = new Database(this);
-        if (history.isEmpty()) return;
+        // RECORD: Start time, duration, number of words, max speed
         HistoryItem last = (HistoryItem) history.getLast();
         double words = last.getLetters() / 5;
         double minutes = (last.getTimestamp()-begin_timestamp)/60000.0;
         Date start_time = new Date();
         start_time.setTime(begin_timestamp);  //record the time we began
-        ContentValues cv = new ContentValues();
-        cv.put(Database.COL_DATE, start_time.getTime());
-        cv.put(Database.COL_DUR, minutes);
-        cv.put(Database.COL_WORDS, words);
-        cv.put(Database.COL_SPEED, max_speed);
-        SQLiteDatabase sdb = db.getWritableDatabase();
-        sdb.insert(Database.TABLE_RECORDS, null, cv);
-        sdb.close();
-        db.close();
+        //     max_speed // already defined
     }
 
 }

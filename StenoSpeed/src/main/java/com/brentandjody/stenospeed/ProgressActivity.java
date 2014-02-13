@@ -32,6 +32,7 @@ public class ProgressActivity extends Activity {
         int i=0;
         GraphViewData[] avgSpeedData = new GraphViewData[c.getCount()];
         GraphViewData[] maxSpeedData = new GraphViewData[c.getCount()];
+        GraphViewData[] durationData = new GraphViewData[c.getCount()];
         while (c.moveToNext()) {
             day = c.getInt(0);
             minutes = c.getInt(1);
@@ -41,14 +42,17 @@ public class ProgressActivity extends Activity {
             avg = Math.round(words/minutes);
             avgSpeedData[i] = new GraphViewData(day-first_day, avg);
             maxSpeedData[i] = new GraphViewData(day-first_day, max);
+            durationData[i] = new GraphViewData(day-first_day, minutes);
             i++;
         }
         db.close();
         GraphView graphView = new LineGraphView(this, "Progress over time");
         GraphViewSeries.GraphViewSeriesStyle avgStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#33B5E5"), 2);
         GraphViewSeries.GraphViewSeriesStyle maxStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#99cc00"), 2);
+        GraphViewSeries.GraphViewSeriesStyle durStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#AA0000"), 4);
         graphView.addSeries(new GraphViewSeries("Average Speed", avgStyle ,avgSpeedData));
         graphView.addSeries(new GraphViewSeries("Top Speed", maxStyle , maxSpeedData));
+        graphView.addSeries(new GraphViewSeries("Session Length", durStyle , durationData));
         graphView.setScalable(true);
         graphView.setShowLegend(true);
         graphView.setLegendAlign(GraphView.LegendAlign.BOTTOM);
