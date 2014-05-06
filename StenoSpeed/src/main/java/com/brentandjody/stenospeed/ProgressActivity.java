@@ -26,6 +26,7 @@ public class ProgressActivity extends Activity {
 
     private GraphView getData() {
         int day, words, minutes, avg, max;
+        double ratio;
         Database db = new Database(this);
         Cursor c = db.getAllData();
         int first_day = 0;
@@ -33,16 +34,19 @@ public class ProgressActivity extends Activity {
         GraphViewData[] avgSpeedData = new GraphViewData[c.getCount()];
         GraphViewData[] maxSpeedData = new GraphViewData[c.getCount()];
         GraphViewData[] durationData = new GraphViewData[c.getCount()];
+        GraphViewData[] ratioData = new GraphViewData[c.getCount()];
         while (c.moveToNext()) {
             day = c.getInt(0);
             minutes = c.getInt(1);
             words = c.getInt(2);
             max = c.getInt(3);
+            ratio = c.getInt(4)/100;
             if (first_day==0) first_day=day;
             avg = Math.round(words/minutes);
             avgSpeedData[i] = new GraphViewData(day-first_day, avg);
             maxSpeedData[i] = new GraphViewData(day-first_day, max);
             durationData[i] = new GraphViewData(day-first_day, minutes);
+            ratioData[i] = new GraphViewData(day-first_day, Math.round(0.1/ratio));
             i++;
         }
         db.close();

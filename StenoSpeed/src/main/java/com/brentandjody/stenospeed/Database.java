@@ -11,7 +11,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class Database extends SQLiteOpenHelper {
 
     static final String DATABASE_NAME="progress";
-    static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 2;
 
     static final String TABLE_RECORDS="records";
 
@@ -19,6 +19,7 @@ public class Database extends SQLiteOpenHelper {
     static final String COL_DUR="duration";
     static final String COL_WORDS="words";
     static final String COL_SPEED="top_speed";
+    static final String COL_RATIO="ratio";
 
     public Database(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -30,19 +31,26 @@ public class Database extends SQLiteOpenHelper {
         +COL_DATE+" INTEGER, "
         +COL_DUR+" INTEGER, "
         +COL_WORDS+" INTEGER, "
-        +COL_SPEED+" INTEGER);");
+        +COL_SPEED+" INTEGER, "
+        +COL_RATIO+" INTEGER);");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        //TODO:in the future we probably need to preserve this data
-        db.execSQL("DROP TABLE IF EXISTS "+TABLE_RECORDS);
-        onCreate(db);
+        if (oldVersion < newVersion) {
+            switch (oldVersion) {
+                case 0: db.execSQL("DROP TABLE IF EXISTS " + TABLE_RECORDS);
+                    onCreate(db);
+                    break;
+                case 1: db.execSQL("ALTER TABLE " + TABLE_RECORDS + " ADD COLUMN " + COL_RATIO + " INTEGER");
+                case 2:
+            }
+        }
     }
 
     public Cursor getAllData() {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor result = db.rawQuery("SELECT "+ COL_DATE + "," + COL_DUR + "," + COL_WORDS + "," + COL_SPEED
+        Cursor result = db.rawQuery("SELECT "+ COL_DATE + "," + COL_DUR + "," + COL_WORDS + "," + COL_SPEED + "," + COL_RATIO
                 + " FROM " + TABLE_RECORDS + " ORDER BY " + COL_DATE + ";", null);
         return result;
     }
