@@ -112,7 +112,7 @@ public class MainActivity extends ActionBarActivity {
         double speed = Math.round(words/minutes);
         if (speed<0) speed=0;
         current_speed_view.setText(getResources().getString(R.string.cur_speed)+speed);
-        ratio_view.setText("Ratio:"+ Math.round(total_strokes / words * 100)/100);
+        ratio_view.setText("Ratio:"+ (Math.round(total_strokes / words * 100)/100));
         if (!initialized) {
             if (history.size() >= THRESHOLD_FOR_MAX) {
                 begin_timestamp = first.getTimestamp();
