@@ -41,12 +41,16 @@ public class ProgressActivity extends Activity {
             words = c.getInt(2);
             max = c.getInt(3);
             ratio = c.getInt(4)/100;
+            if (ratio==0) ratio=10;
             if (first_day==0) first_day=day;
-            avg = Math.round(words/minutes);
+            if (minutes==0)
+                avg=0;
+            else
+                avg = Math.round(words/minutes);
             avgSpeedData[i] = new GraphViewData(day-first_day, avg);
             maxSpeedData[i] = new GraphViewData(day-first_day, max);
             durationData[i] = new GraphViewData(day-first_day, minutes);
-            ratioData[i] = new GraphViewData(day-first_day, Math.round(0.1/ratio));
+            ratioData[i] = new GraphViewData(day-first_day, Math.round(100/ratio));
             i++;
         }
         db.close();
