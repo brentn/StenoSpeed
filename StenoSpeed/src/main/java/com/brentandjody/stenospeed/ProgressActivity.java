@@ -25,19 +25,19 @@ public class ProgressActivity extends Activity {
     }
 
     private GraphView getData() {
-        long day;
-        int words, minutes, avg, max;
+        double day, offset;
+        int  words, minutes, avg, max;
         double ratio;
         Database db = new Database(this);
         Cursor c = db.getAllData();
-        long first_day = 0;
+        double first_day = 0;
         int i=0;
         GraphViewData[] avgSpeedData = new GraphViewData[c.getCount()];
         GraphViewData[] maxSpeedData = new GraphViewData[c.getCount()];
         GraphViewData[] durationData = new GraphViewData[c.getCount()];
         GraphViewData[] ratioData = new GraphViewData[c.getCount()];
         while (c.moveToNext()) {
-            day = c.getInt(0);
+            day = (c.getDouble(0)/1000L);
             minutes = c.getInt(1);
             words = c.getInt(2);
             max = c.getInt(3);
@@ -48,10 +48,11 @@ public class ProgressActivity extends Activity {
                 avg=0;
             else
                 avg = Math.round(words/minutes);
-            avgSpeedData[i] = new GraphViewData(day-first_day, avg);
-            maxSpeedData[i] = new GraphViewData(day-first_day, max);
-            durationData[i] = new GraphViewData(day-first_day, minutes);
-            ratioData[i] = new GraphViewData(day-first_day, Math.round(100/ratio));
+            offset = day-first_day;
+            avgSpeedData[i] = new GraphViewData(offset, avg);
+            maxSpeedData[i] = new GraphViewData(offset, max);
+            durationData[i] = new GraphViewData(offset, minutes);
+            ratioData[i] = new GraphViewData(offset, Math.round(100/ratio));
             i++;
         }
         db.close();
@@ -67,7 +68,7 @@ public class ProgressActivity extends Activity {
         graphView.setShowLegend(true);
         graphView.setLegendAlign(GraphView.LegendAlign.BOTTOM);
         graphView.getGraphViewStyle().setLegendWidth(300);
-        graphView.getGraphViewStyle().setHorizontalLabelsColor(Color.argb(0,0,0,0));
+        //graphView.getGraphViewStyle().setHorizontalLabelsColor(Color.argb(0,0,0,0));
         return graphView;
     }
 
