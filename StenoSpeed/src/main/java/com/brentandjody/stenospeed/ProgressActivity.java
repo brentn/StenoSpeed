@@ -59,7 +59,7 @@ public class ProgressActivity extends Activity {
         GraphView graphView = new LineGraphView(this, "Progress over time");
         GraphViewSeries.GraphViewSeriesStyle avgStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#33B5E5"), 2);
         GraphViewSeries.GraphViewSeriesStyle maxStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#99cc00"), 2);
-        //GraphViewSeries.GraphViewSeriesStyle durStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#008800"), 4);
+        GraphViewSeries.GraphViewSeriesStyle durStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#008800"), 4);
         GraphViewSeries.GraphViewSeriesStyle ratStyle = new GraphViewSeries.GraphViewSeriesStyle(Color.parseColor("#AA0000"), 2);
         graphView.addSeries(new GraphViewSeries("Average Speed", avgStyle ,avgSpeedData));
         graphView.addSeries(new GraphViewSeries("Top Speed", maxStyle , maxSpeedData));

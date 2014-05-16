@@ -115,6 +115,7 @@ public class MainActivity extends ActionBarActivity {
         Log.d("StenoSpeed", "strokes:"+total_strokes+" words:"+total_words+ " mins:" + minutes + " ratio:"+ratio);
         if (speed<0) speed=0;
         current_speed_view.setText(getResources().getString(R.string.cur_speed)+speed);
+     ratio=total_strokes;
         ratio_view.setText(getResources().getString(R.string.ratio)+ ( ratio ));
         if (!initialized) {
             if (history.size() >= THRESHOLD_FOR_MAX) {
