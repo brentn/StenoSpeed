@@ -2,9 +2,10 @@
 <resources>
 
     <string name="app_name">Steno Speed Test</string>
-    <string name="max_speed">Top Speed:</string>
-    <string name="cur_speed">Current Speed:</string>
+    <string name="max_speed">Max:</string>
+    <string name="cur_speed">Speed:</string>
     <string name="title_activity_progress">Progress</string>
+    <string name="ratio">strokes/word:</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_progress">Progress</string>
 

@@ -108,11 +108,14 @@ public class MainActivity extends ActionBarActivity {
         HistoryItem first = (HistoryItem) history.getFirst();
         HistoryItem last = (HistoryItem) history.getLast();
         double words = (last.getLetters()-first.getLetters())/5.0;
+        double total_words = total_letters/5.0;
         double minutes = (last.getTimestamp()-first.getTimestamp())/60000.0;
         double speed = Math.round(words/minutes);
+        double ratio = Math.round(total_strokes * 100.0 / (total_letters/5.0) )/100.0;
+        Log.d("StenoSpeed", "strokes:"+total_strokes+" words:"+total_words+ " mins:" + minutes + " ratio:"+ratio);
         if (speed<0) speed=0;
         current_speed_view.setText(getResources().getString(R.string.cur_speed)+speed);
-        ratio_view.setText("Ratio:"+ (Math.round(total_strokes / words * 100)/100));
+        ratio_view.setText(getResources().getString(R.string.ratio)+ ( ratio ));
         if (!initialized) {
             if (history.size() >= THRESHOLD_FOR_MAX) {
                 begin_timestamp = first.getTimestamp();
@@ -171,7 +174,7 @@ public class MainActivity extends ActionBarActivity {
         double ratio = Math.round(total_strokes/words * 100);
         Date start_time = new Date();
         start_time.setTime(begin_timestamp);  //record the time we began
-        Log.d("StenoSpeed", "Stats: words:"+words+" minutes:"+minutes+" max:"+max_speed);
+        Log.d("StenoSpeed", "Stats: words:"+words+" minutes:"+minutes+" ratio:"+ratio+" max:"+max_speed);
         ContentValues cv = new ContentValues();
         cv.put(Database.COL_DATE, start_time.getTime());
         cv.put(Database.COL_DUR, minutes);
