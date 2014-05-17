@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -33,6 +34,8 @@ public class MainActivity extends ActionBarActivity {
     private TextView ratio_view;
     private boolean initialized =false;
     private long begin_timestamp;
+    private EditText main_window;
+    private StrokeReceiver strokeReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         //fixStats();
         setContentView(R.layout.activity_main);
-        EditText main_window = (EditText) findViewById(R.id.main_window);
+        main_window = (EditText) findViewById(R.id.main_window);
         current_speed_view = (TextView) findViewById(R.id.current_speed);
         max_speed_view = (TextView) findViewById(R.id.maximum_speed);
         ratio_view = (TextView) findViewById(R.id.ratio);
@@ -50,16 +53,30 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("StenoSpeed", Integer.toString( count));
                 int new_letters = count-before;
                 total_letters+=new_letters;
-                total_strokes++;
                 history.add(new HistoryItem(total_letters));
                 updateSpeed();
             }
 
             @Override
-            public void afterTextChanged(Editable s) { }
+            public void afterTextChanged(Editable s) {
+            }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        strokeReceiver = new StrokeReceiver();
+        registerReceiver(strokeReceiver, new IntentFilter("com.brentandjody.STENO_STROKE"));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(strokeReceiver);
     }
 
     @Override
@@ -112,11 +129,12 @@ public class MainActivity extends ActionBarActivity {
         double minutes = (last.getTimestamp()-first.getTimestamp())/60000.0;
         double speed = Math.round(words/minutes);
         double ratio = Math.round(total_strokes * 100.0 / (total_letters/5.0) )/100.0;
+        total_strokes = strokeReceiver.getStrokes();
         Log.d("StenoSpeed", "strokes:"+total_strokes+" words:"+total_words+ " mins:" + minutes + " ratio:"+ratio);
         if (speed<0) speed=0;
         current_speed_view.setText(getResources().getString(R.string.cur_speed)+speed);
-     ratio=total_strokes;
-        ratio_view.setText(getResources().getString(R.string.ratio)+ ( ratio ));
+        if (total_strokes>0)
+            ratio_view.setText(getResources().getString(R.string.ratio)+ ( ratio ));
         if (!initialized) {
             if (history.size() >= THRESHOLD_FOR_MAX) {
                 begin_timestamp = first.getTimestamp();
