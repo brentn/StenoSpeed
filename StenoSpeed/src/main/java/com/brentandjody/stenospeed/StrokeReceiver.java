@@ -10,6 +10,11 @@ import android.content.Intent;
 public class StrokeReceiver extends BroadcastReceiver {
     private int strokes=0;
 
+    public StrokeReceiver(int initial_strokes) {
+        super();
+        strokes=initial_strokes;
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
         strokes++;

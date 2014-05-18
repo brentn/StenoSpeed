@@ -18,6 +18,7 @@ public class LimitedLengthQueue<Value> extends LinkedBlockingQueue<Value> {
 
     @Override
     public boolean add(Value value) {
+        if (value==null) return false;
         last_item=value;
         super.add(value);
         while (size()>size_limit)

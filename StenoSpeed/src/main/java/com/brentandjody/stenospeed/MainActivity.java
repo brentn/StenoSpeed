@@ -27,7 +27,7 @@ public class MainActivity extends ActionBarActivity {
 
     private int total_letters=0;
     private int total_strokes=0;
-    private LimitedLengthQueue history = new LimitedLengthQueue<HistoryItem>(BUFFER_SIZE);
+    private LimitedLengthQueue<HistoryItem> history = new LimitedLengthQueue<HistoryItem>(BUFFER_SIZE);
     private double max_speed=0.0;
     private TextView current_speed_view;
     private TextView max_speed_view;
@@ -69,7 +69,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        strokeReceiver = new StrokeReceiver();
+        strokeReceiver = new StrokeReceiver(total_strokes);
         registerReceiver(strokeReceiver, new IntentFilter("com.brentandjody.STENO_STROKE"));
     }
 
@@ -122,8 +122,8 @@ public class MainActivity extends ActionBarActivity {
             ratio_view.setText("");
             return;
         }
-        HistoryItem first = (HistoryItem) history.getFirst();
-        HistoryItem last = (HistoryItem) history.getLast();
+        HistoryItem first = history.getFirst();
+        HistoryItem last = history.getLast();
         double words = (last.getLetters()-first.getLetters())/5.0;
         double total_words = total_letters/5.0;
         double minutes = (last.getTimestamp()-first.getTimestamp())/60000.0;
@@ -134,7 +134,7 @@ public class MainActivity extends ActionBarActivity {
         if (speed<0) speed=0;
         current_speed_view.setText(getResources().getString(R.string.cur_speed)+speed);
         if (total_strokes>0)
-            ratio_view.setText(getResources().getString(R.string.ratio)+ ( ratio ));
+            ratio_view.setText(getResources().getString(R.string.ratio)+ratio );
         if (!initialized) {
             if (history.size() >= THRESHOLD_FOR_MAX) {
                 begin_timestamp = first.getTimestamp();
@@ -187,7 +187,7 @@ public class MainActivity extends ActionBarActivity {
         if (!initialized) return;
         Database db = new Database(this);
         if (history.isEmpty()) return;
-        HistoryItem last = (HistoryItem) history.getLast();
+        HistoryItem last = history.getLast();
         double words = last.getLetters() / 5;
         double minutes = (last.getTimestamp()-begin_timestamp)/60000.0;
         double ratio = Math.round(total_strokes/words * 100);
@@ -201,8 +201,10 @@ public class MainActivity extends ActionBarActivity {
         cv.put(Database.COL_SPEED, max_speed);
         cv.put(Database.COL_RATIO, ratio);
         SQLiteDatabase sdb = db.getWritableDatabase();
-        sdb.insert(Database.TABLE_RECORDS, null, cv);
-        sdb.close();
+        if (sdb != null) {
+            sdb.insert(Database.TABLE_RECORDS, null, cv);
+            sdb.close();
+        }
         db.close();
     }
 
